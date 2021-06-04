@@ -1,6 +1,6 @@
 @extends('layouts.header')
 
 
-@section('section')
+@section('content')
     111
 @endsection

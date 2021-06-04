@@ -4,8 +4,6 @@
 namespace App\Http\Controllers;
 
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +12,11 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    static public function auth(): Model|Builder|null {
+    static private $USER = null;
+
+    static public function auth(): object|null {
+        if (self::$USER != null) return self::$USER;
+
         $headers = getallheaders();
         $token = null;
         $id = null;
@@ -26,10 +28,12 @@ class UserController extends Controller
 
         if (empty($id) || empty($token)) return null;
 
-        return DB::table('users')->where([
+        self::$USER = DB::table('users')->where([
             ['id', '=', $id],
             ['remember_token', '=', $token]
         ])->first();
+
+        return self::$USER;
     }
 
     public function registration(Request $request): array {
@@ -78,7 +82,29 @@ class UserController extends Controller
         return $this->returnData(['token' => $token, 'id' => $data->id]);
     }
 
-    public function checkAuth(Request $request) {
+    public function getInfo(Request $request) {
+        $info = self::auth();
+
+        return $this->returnData([
+            'name' => $info->name,
+            'email' => $info->email,
+            'avatar' => $info->avatar
+        ]);
+    }
+
+    public function update(Request $request) {
+        $user = self::auth();
+
+        $arr = [];
+
+        if ($request->has('image')) {
+            $arr['avatar'] = ImageController::loadImage($request->file('image'), ImageController::USER_PHOTOS);
+        }
+
+        DB::table('users')->where('id', '=', $user->id)->update($arr);
+    }
+
+    public function checkAuth(Request $request): array {
         if (self::auth()) return $this->returnData('');
         else return $this->returnError('');
     }

@@ -15,7 +15,10 @@
 
     <div class="row col-auto align-items-center">
 
-        <button class="btn color--primary" id="open_auth" type="button">Войти/Регистрация</button>
+        <button class="btn color--primary for_guest" id="open_auth" type="button">Войти/Регистрация</button>
+        <button class="btn color--primary for_auth" type="button">
+            <a href="/user" class="color--primary user_name"></a>
+        </button>
 
     </div>
 </header>
@@ -62,7 +65,9 @@
 
 </div>
 
-@yield('section')
+<div class="p-5">
+    @yield('content')
+</div>
 
 <script type="module" src="/frontend/js/header.js"></script>
 

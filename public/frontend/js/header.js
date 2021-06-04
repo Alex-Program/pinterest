@@ -1,5 +1,6 @@
-import {Request} from "./Request.js";
-import {Cookie} from "./Cookie.js";
+import {HTTP} from "./classes/HTTP.js";
+import {Cookie} from "./classes/Cookie.js";
+import {User} from "./classes/User.js";
 
 const elements = {
     authModal: document.getElementById("auth_modal"),
@@ -8,8 +9,29 @@ const elements = {
     registration: document.getElementById("registration"),
     registrationForm: document.getElementById("registration_form"),
     loginForm: document.getElementById("login_form"),
-    login: document.getElementById("login")
+    login: document.getElementById("login"),
+    forGuest: document.querySelectorAll(".for_guest"),
+    forAuth: document.querySelectorAll(".for_auth"),
+    userName: document.querySelectorAll(".user_name")
 };
+
+async function loadUserInfo() {
+    const info = await User.info;
+    elements.userName.forEach(el => el.innerText = info.name);
+}
+
+HTTP.sendRequest("GET", "/api/user/check")
+    .then(data => {
+        if (data.result) {
+            elements.forGuest.forEach(el => el.style.display = "none");
+            elements.forAuth.forEach(el => el.style.display = "");
+            loadUserInfo();
+            return;
+        }
+
+        elements.forGuest.forEach(el => el.style.display = "");
+        elements.forAuth.forEach(el => el.style.display = "none");
+    });
 
 elements.openAuth.addEventListener("click", () => {
     elements.authModal.classList.remove("second");
@@ -39,7 +61,7 @@ elements.registration.addEventListener("click", function () {
 
     const formData = new FormData(elements.registrationForm);
 
-    Request.sendRequest("POST", "/api/registration", formData)
+    HTTP.sendRequest("POST", "/api/registration", formData)
         .then(data => {
             this.disabled = false;
 
@@ -64,7 +86,7 @@ elements.login.addEventListener("click", function () {
 
     const formData = new FormData(elements.loginForm);
 
-    Request.sendRequest("POST", "/api/login", formData)
+    HTTP.sendRequest("POST", "/api/login", formData)
         .then(data => {
             this.disabled = false;
 

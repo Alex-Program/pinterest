@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,8 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/registration', [UserController::class, 'registration']);
 Route::post('/login', [UserController::class, 'login']);
-Route::post('/user/check', [UserController::class, 'login']);
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::any('/user/check', [UserController::class, 'checkAuth']);
+Route::any('/user/info', [UserController::class, 'getInfo'])->middleware('auth');
+Route::post('/user/update', [UserController::class, 'update'])->middleware('auth');

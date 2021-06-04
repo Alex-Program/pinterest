@@ -17,4 +17,9 @@ class FrontendController extends Controller
         return view('index');
     }
 
+    public function user(Request $request) {
+
+        return view('user');
+    }
+
 }

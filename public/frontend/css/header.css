@@ -29,7 +29,7 @@ a.text--primary:hover {
     color: var(--text-color-primary);
 }
 
-button.color--primary:hover {
+button.color--primary:hover, a.color--primary:hover {
     color: var(--text-color-primary);
 }
 
@@ -70,4 +70,18 @@ button.color--primary:hover {
 
 #auth_modal.second > form {
     left: -100%;
+}
+
+#user_image {
+    transition: border 250ms, transform 250ms;
+    max-height: 20vh;
+    border-radius: 10px;
+    cursor: pointer;
+    transform: scale(1);
+    border: solid 3px transparent;
+}
+
+#user_image:hover {
+    border: solid 3px var(--color-primary);
+    transform: scale(1.05);
 }

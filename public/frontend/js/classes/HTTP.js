@@ -1,4 +1,4 @@
-export class Request {
+export class HTTP {
 
     static sendRequest(method, url, data = null) {
         return new Promise((resolve, reject) => {
