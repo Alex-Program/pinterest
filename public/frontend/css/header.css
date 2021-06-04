@@ -1,0 +1,73 @@
+:root {
+    --color-primary: #e60023;
+    --text-color-primary: #ffffff;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.text--big {
+    font-size: 2rem;
+}
+
+.text--middle {
+    font-size: 1.5rem;
+}
+
+.text--primary {
+    color: var(--color-primary);
+}
+
+a.text--primary:hover {
+    color: var(--color-primary);
+}
+
+.color--primary {
+    background: var(--color-primary);
+    color: var(--text-color-primary);
+}
+
+button.color--primary:hover {
+    color: var(--text-color-primary);
+}
+
+.modal--custom {
+    --scale: 0.3;
+    transition: opacity 250ms, visibility 250ms, transform 250ms;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(var(--scale));
+    box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    padding: 4rem;
+    min-width: 25vw;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.modal--custom.opened {
+    visibility: visible;
+    --scale: 1;
+    opacity: 1;
+}
+
+#auth_modal {
+    padding: 0;
+    width: 30vw;
+    overflow: hidden;
+}
+
+#auth_modal > form {
+    transition: left 250ms;
+    min-width: 100%;
+    position: relative;
+    padding: 4rem;
+    left: 0;
+}
+
+#auth_modal.second > form {
+    left: -100%;
+}
