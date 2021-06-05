@@ -2,6 +2,13 @@ import {User} from "./classes/User.js";
 import {IMG} from "./classes/IMG.js";
 import {HTTP} from "./classes/HTTP.js";
 import {Time} from "./classes/Time.js";
+import {Preloader} from "./classes/Preloader.js";
+
+let userId = parseInt(new URL(location.href).searchParams.get("id"));
+if (!userId) {
+    if (!User.ID) throw "Invalid User";
+    else userId = User.ID;
+}
 
 const elements = {
     userEmail: document.getElementById("user_email"),
@@ -11,13 +18,39 @@ const elements = {
     openAddAlbum: document.getElementById("open_add"),
     addAlbum: document.getElementById("add_album"),
     albumModal: document.getElementById("album_modal"),
-    albums: document.getElementById("albums")
+    albums: document.getElementById("albums"),
+    forUser: document.querySelectorAll(".for_user"),
+    forOther: document.querySelectorAll(".for_other")
 };
 
-User.info.then(info => {
-    elements.userEmail.innerText = info.email;
-    if (info.avatar) elements.userImage.src = IMG.USER_AVATARS + "/" + info.avatar;
-});
+Preloader.open();
+
+let userInfoPromise;
+let albumsUrl = "/api/albums";
+
+if (userId === User.ID) {
+    userInfoPromise = User.info;
+    elements.forOther.forEach(el => el.style.display = "none");
+} else {
+    userInfoPromise = HTTP.sendRequest("GET", "/api/user/info?id=" + userId).then(data => data.data);
+    albumsUrl += "?user_id=" + userId;
+    elements.forUser.forEach(el => el.style.display = "none");
+}
+
+Promise.all([
+    userInfoPromise.then(info => {
+        elements.userEmail.innerText = info.email;
+        if (info.avatar) elements.userImage.src = IMG.USER_AVATARS + "/" + info.avatar;
+    }),
+    HTTP.sendRequest("GET", albumsUrl)
+        .then(data => {
+            data = data.data;
+
+            let html = "";
+            data.forEach(album => html += renderAlbum(album));
+            elements.albums.innerHTML = html;
+        })
+]).then(() => Preloader.close());
 
 function renderAlbum(album) {
     const img = album.avatar ? IMG.ALBUM_PHOTOS + "/" + album.avatar : IMG.NO_IMAGE;
@@ -35,25 +68,20 @@ function renderAlbum(album) {
 
 }
 
-HTTP.sendRequest("GET", "/api/albums")
-    .then(data => {
-        data = data.data;
-
-        let html = "";
-        data.forEach(album => html += renderAlbum(album));
-        elements.albums.innerHTML = html;
-    });
-
 
 elements.userImage.addEventListener("click", function () {
     if (this.classList.contains("disabled")) return;
 
-    elements.imageInput.dispatchEvent(new MouseEvent("click"))
+    if (userId === User.ID) {
+        elements.imageInput.dispatchEvent(new MouseEvent("click"))
+    } else if (document.fullscreenElement) document.exitFullscreen();
+    else this.requestFullscreen();
 });
 
 elements.imageInput.addEventListener("change", function () {
     if (this.files.length === 0) return;
 
+    Preloader.open();
     elements.userImage.classList.add("disabled");
 
     IMG.readImage(this.files[0]).then(url => elements.userImage.src = url);
@@ -62,6 +90,8 @@ elements.imageInput.addEventListener("change", function () {
         .then(() => {
             elements.uploadForm.reset();
             elements.userImage.classList.remove("disabled");
+
+            Preloader.close();
         });
 
 });
@@ -72,6 +102,7 @@ elements.addAlbum.addEventListener("click", function () {
     if (!elements.albumModal.reportValidity()) return;
 
     this.disabled = true;
+    Preloader.open();
 
     const formData = new FormData(elements.albumModal);
     HTTP.sendRequest("POST", "/api/album/add", formData)
@@ -84,6 +115,7 @@ elements.addAlbum.addEventListener("click", function () {
             elements.albumModal.classList.remove("opened");
 
             this.disabled = false;
+            Preloader.close();
         });
 
 

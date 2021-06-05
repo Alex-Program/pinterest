@@ -82,8 +82,12 @@ class UserController extends Controller
         return $this->returnData(['token' => $token, 'id' => $data->id]);
     }
 
-    public function getInfo(Request $request) {
-        $info = self::auth();
+    public function getInfo(Request $request): array {
+        if ($request->has('id')) {
+            $info = DB::table('users')->where('id', '=', $request->get('id'))->first();
+        } else $info = self::auth();
+
+        if (!$info) return $this->returnError('invalid');
 
         return $this->returnData([
             'name' => $info->name,

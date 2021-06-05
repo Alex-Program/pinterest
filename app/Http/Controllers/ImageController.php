@@ -79,4 +79,28 @@ class ImageController extends Controller
         return $this->returnData(['src' => $fileName, 'id' => $imageId, 'time' => $time, 'name' => $name]);
     }
 
+    public function show(Request $request): array {
+        $validator = Validator::make($request->all(), [
+            'id' => 'bail|required|integer|min:1'
+        ]);
+        if ($validator->fails()) return $this->returnError('');
+
+        $data = DB::table('images')->where('id', '=', $request->get('id'))->first();
+        if (!$data) return $this->returnError('invalid');
+
+        $data->user = DB::table('users')->select(['name', 'avatar'])->where('id', '=', $data->user_id)->first();
+
+        if ($request->get('comments', '0') == '1') {
+            $sql = "SELECT *
+FROM `comments`
+         JOIN (SELECT `name`, `avatar`, `id` as `u_id` FROM `users`) as `users`
+              ON `comments`.`user_id` = `users`.`u_id`
+WHERE `comments`.`image_id` = ?
+";
+            $data->comments = DB::select($sql, [$data->id]);
+        }
+
+        return $this->returnData($data);
+    }
+
 }

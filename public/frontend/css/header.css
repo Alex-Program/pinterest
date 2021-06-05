@@ -5,6 +5,24 @@
     --text-color-primary: #ffffff;
 }
 
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #dedede;
+}
+
+::-webkit-scrollbar-thumb {
+    transition: background 250ms;
+    background: var(--color-primary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark);
+}
+
 body {
     height: 100vh;
 }
@@ -159,6 +177,10 @@ button {
     outline: none !important;
 }
 
+.form-control {
+    border-radius: 1rem;
+}
+
 .form-control:focus {
     border-color: var(--color-primary) !important;
     box-shadow: 0 0 0 0.25rem var(--shadow-primary) !important;
@@ -307,4 +329,52 @@ button.color--primary:hover {
 
 #search_input {
     border-radius: 1rem;
+}
+
+#image_view_modal {
+    width: 50vw;
+    max-height: 80vh;
+    display: flex;
+}
+
+#image_view_modal > div {
+    flex: 1
+}
+
+#comments {
+    flex: 1;
+    overflow: auto;
+}
+
+#image_view {
+    transition: filter 250ms;
+    cursor: zoom-in;
+}
+
+
+#image_view:hover {
+    filter: brightness(50%);
+}
+
+.comment {
+    display: flex;
+    flex-direction: row;
+}
+
+.img--rounded {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.img--rounded > img {
+    min-height: 100%;
+    min-width: 100%;
+}
+
+.comment__text {
+    padding-left: 0.5rem;
+    flex: 1;
 }

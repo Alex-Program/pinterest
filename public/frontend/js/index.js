@@ -16,3 +16,10 @@ scrollLoader.renderFunction = renderImage;
 scrollLoader.url = searchURL;
 scrollLoader.dataset = "id";
 scrollLoader.load();
+
+element.images.addEventListener("click", function (event) {
+    const image = event.target.closest(".image");
+    if (!image) return;
+
+    imageView(image.dataset.id);
+});

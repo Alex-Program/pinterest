@@ -18,7 +18,7 @@ class FrontendController extends Controller
     }
 
     public function user(Request $request): Factory|View|Application {
-
+        
         return view('user');
     }
 

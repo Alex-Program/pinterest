@@ -3,6 +3,7 @@ import {Cookie} from "./classes/Cookie.js";
 import {User} from "./classes/User.js";
 import {IMG} from "./classes/IMG.js";
 import {Time} from "./classes/Time.js";
+import {Preloader} from "./classes/Preloader.js";
 
 String.prototype.get = function (from, to = null) {
     if (from < 0) from = this.length + from;
@@ -28,8 +29,17 @@ const elements = {
     forGuest: document.querySelectorAll(".for_guest"),
     forAuth: document.querySelectorAll(".for_auth"),
     userName: document.querySelectorAll(".user_name"),
+    userAvatar: document.querySelectorAll(".user_avatar"),
     closeModal: document.querySelectorAll(".modal__close"),
-    searchInput: document.getElementById("search_input")
+    searchInput: document.getElementById("search_input"),
+    imageViewModal: document.getElementById("image_view_modal"),
+    imageView: document.getElementById("image_view"),
+    addComment: document.getElementById("add_comment"),
+    commentForm: document.getElementById("comment_form"),
+    comments: document.getElementById("comments"),
+    imageViewUser: document.getElementById("image_view_user"),
+    imageViewAvatar: document.getElementById("image_view_avatar"),
+    exit: document.querySelectorAll(".exit")
 };
 
 window.renderImage = function (image) {
@@ -53,19 +63,72 @@ window.renderImage = function (image) {
 async function loadUserInfo() {
     const info = await User.info;
     elements.userName.forEach(el => el.innerText = info.name);
+
+    const avatar = info.avatar ? IMG.USER_AVATARS + "/" + info.avatar : IMG.NO_IMAGE;
+    elements.userAvatar.forEach(el => el.src = avatar);
 }
+
+function renderComment(comment) {
+    const avatar = comment.avatar ? IMG.USER_AVATARS + "/" + comment.avatar : IMG.NO_IMAGE;
+
+    return `<div class="comment p-1" data-id="${comment.id}">
+                <div class="comment__img img--rounded">
+                    <img class="w-100" src="${avatar}">
+                </div>
+                <div class="comment__text">
+                    ${comment.comment}
+                </div>
+</div>`;
+}
+
+window.imageView = async function (imageId) {
+    Preloader.open();
+    let data = await HTTP.sendRequest("GET", "/api/image/show?id=" + imageId + "&comments=1");
+    data = data.data;
+
+    elements.imageViewModal.dataset.id = data.id;
+    elements.imageView.src = IMG.MAIN_PHOTOS + "/" + data.src;
+
+    let html = "";
+    data.comments.forEach(comment => html += renderComment(comment));
+    elements.comments.innerHTML = html;
+    elements.imageViewUser.innerText = data.user.name;
+    elements.imageViewAvatar.src = data.user.avatar ? IMG.USER_AVATARS + "/" + data.user.avatar : IMG.NO_IMAGE;
+
+    elements.imageViewModal.classList.add("opened");
+
+    Preloader.close();
+}
+
+elements.imageView.addEventListener("click", function () {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else elements.imageView.requestFullscreen();
+});
+
+elements.addComment.addEventListener("click", function () {
+    if (!elements.commentForm.reportValidity()) return;
+
+    const formData = new FormData(elements.commentForm);
+    formData.append("image_id", elements.imageViewModal.dataset.id);
+    HTTP.sendRequest("POST", "/api/image/comment/add", formData)
+        .then(data => {
+            data = data.data;
+
+            const html = renderComment(data);
+            elements.comments.insertAdjacentHTML("beforeend", html);
+        });
+});
+
 
 HTTP.sendRequest("GET", "/api/user/check")
     .then(data => {
         if (data.result) {
-            elements.forGuest.forEach(el => el.style.display = "none");
-            elements.forAuth.forEach(el => el.style.display = "");
+            elements.forGuest.forEach(el => el.style.setProperty("display", "none", "important"));
             loadUserInfo();
             return;
         }
 
-        elements.forGuest.forEach(el => el.style.display = "");
-        elements.forAuth.forEach(el => el.style.display = "none");
+        elements.forAuth.forEach(el => el.style.setProperty("display", "none", "important"));
     });
 
 elements.openAuth.addEventListener("click", () => {
@@ -86,6 +149,10 @@ document.body.addEventListener("click", function (event) {
     if (event.target.closest("#auth_modal") || event.target.closest("#open_auth")) return;
 
     elements.authModal.classList.remove("opened", "second");
+});
+
+elements.exit.forEach(el => {
+    el.addEventListener("click", () => User.exit());
 });
 
 elements.registration.addEventListener("click", function () {

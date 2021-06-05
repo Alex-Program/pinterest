@@ -23,9 +23,15 @@
         <img id="user_image" src="/frontend/images/no_image.webp">
         <div class="user_name fw-bold text--big mt-2"></div>
         <div class="text--middle mt-2" id="user_email"></div>
+        <div class="mt-2">
+            <button class="btn color--primary for_other for_auth">Подписаться</button>
+        </div>
+        <div class="mt-2">
+            <button class="btn color--primary exit for_user for_auth">Выйти</button>
+        </div>
     </div>
     <div class="row justify-content-end">
-        <button class="col-auto btn color--primary" id="open_add" type="button">Добавить доску</button>
+        <button class="col-auto btn color--primary for_user" id="open_add" type="button">Добавить доску</button>
     </div>
     <div class="row mx-0" id="albums">
 
