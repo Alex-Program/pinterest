@@ -1,11 +1,171 @@
 :root {
     --color-primary: #e60023;
+    --shadow-primary: rgba(230, 0, 35, 0.25);
+    --color-primary-dark: #9c001b;
     --text-color-primary: #ffffff;
+}
+
+body {
+    height: 100vh;
+}
+
+
+#preloader {
+    transition: opacity 250ms, visibility 250ms;
+    position: fixed;
+    background: rgba(33, 34, 39, 0.7);
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+}
+
+#preloader.opened {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cssload-loader {
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    min-width: 15vw;
+    min-height: 15vw;
+    perspective: 780px;
+}
+
+.cssload-inner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    -o-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border-radius: 50%;
+    -o-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+}
+
+.cssload-inner.cssload-one {
+    left: 0%;
+    top: 0%;
+    animation: cssload-rotate-one 1.15s linear infinite;
+    -o-animation: cssload-rotate-one 1.15s linear infinite;
+    -ms-animation: cssload-rotate-one 1.15s linear infinite;
+    -webkit-animation: cssload-rotate-one 1.15s linear infinite;
+    -moz-animation: cssload-rotate-one 1.15s linear infinite;
+    border-bottom: 10px solid #00c0ff;
+}
+
+.cssload-inner.cssload-two {
+    right: 0%;
+    top: 0%;
+    animation: cssload-rotate-two 1.15s linear infinite;
+    -o-animation: cssload-rotate-two 1.15s linear infinite;
+    -ms-animation: cssload-rotate-two 1.15s linear infinite;
+    -webkit-animation: cssload-rotate-two 1.15s linear infinite;
+    -moz-animation: cssload-rotate-two 1.15s linear infinite;
+    border-right: 10px solid lime;
+}
+
+.cssload-inner.cssload-three {
+    right: 0%;
+    bottom: 0%;
+    animation: cssload-rotate-three 1.15s linear infinite;
+    -o-animation: cssload-rotate-three 1.15s linear infinite;
+    -ms-animation: cssload-rotate-three 1.15s linear infinite;
+    -webkit-animation: cssload-rotate-three 1.15s linear infinite;
+    -moz-animation: cssload-rotate-three 1.15s linear infinite;
+    border-top: 10px solid var(--color-primary);
+}
+
+@keyframes cssload-rotate-one {
+    0% {
+        transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+    }
+    100% {
+        transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+    }
+}
+
+@-webkit-keyframes cssload-rotate-one {
+    0% {
+        -webkit-transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+    }
+    100% {
+        -webkit-transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+    }
+}
+
+@keyframes cssload-rotate-two {
+    0% {
+        transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+    }
+    100% {
+        transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+    }
+}
+
+@-webkit-keyframes cssload-rotate-two {
+    0% {
+        -webkit-transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+    }
+    100% {
+        -webkit-transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+    }
+}
+
+@keyframes cssload-rotate-three {
+    0% {
+        transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+    }
+    100% {
+        transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+    }
+}
+
+@-webkit-keyframes cssload-rotate-three {
+    0% {
+        -webkit-transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+    }
+    100% {
+        -webkit-transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+    }
+}
+
+
+#main_container {
+    overflow: auto;
+    height: 100vh;
 }
 
 a {
     text-decoration: none;
     cursor: pointer;
+    color: inherit !important;
+}
+
+button {
+    outline: none !important;
+}
+
+.form-control:focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 0.25rem var(--shadow-primary) !important;
+}
+
+.btn {
+    box-shadow: none !important;
 }
 
 .text--big {
@@ -33,6 +193,10 @@ button.color--primary:hover, a.color--primary:hover {
     color: var(--text-color-primary);
 }
 
+button.color--primary:hover {
+    background: var(--color-primary-dark);
+}
+
 .modal--custom {
     --scale: 0.3;
     transition: opacity 250ms, visibility 250ms, transform 250ms;
@@ -46,6 +210,8 @@ button.color--primary:hover, a.color--primary:hover {
     min-width: 25vw;
     opacity: 0;
     visibility: hidden;
+    background: white;
+    z-index: 1;
 }
 
 .modal--custom.opened {
@@ -84,4 +250,61 @@ button.color--primary:hover, a.color--primary:hover {
 #user_image:hover {
     border: solid 3px var(--color-primary);
     transform: scale(1.05);
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.album, .image {
+    --scale: 1;
+    --border-color: transparent;
+    transition: transform 250ms, border 250ms;
+    border: solid 3px var(--border-color);
+    border-radius: 5px;
+    transform: scale(var(--scale));
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.album:hover, .image:hover {
+    --border-color: var(--color-primary);
+    --scale: 1.1;
+}
+
+.album > img, .image > img {
+    border-radius: 0 0 5px 5px;
+}
+
+.overlay {
+    transition: transform 250ms;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    transform: translateY(0);
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.album:hover .overlay, .image:hover .overlay, .overlay:hover {
+    transform: translateY(-100%);
+}
+
+.search {
+    transition: padding-left 250ms, padding-right 250ms;
+    padding-left: 7rem;
+    padding-right: 7rem;
+}
+
+.search:focus-within {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#search_input {
+    border-radius: 1rem;
 }

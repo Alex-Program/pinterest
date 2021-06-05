@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontendController::class, 'index']);
 Route::get('/user', [FrontendController::class, 'user']);
+Route::get('/album', [FrontendController::class, 'album']);

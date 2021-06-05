@@ -17,9 +17,13 @@ class FrontendController extends Controller
         return view('index');
     }
 
-    public function user(Request $request) {
+    public function user(Request $request): Factory|View|Application {
 
         return view('user');
+    }
+
+    public function album(Request $request): Factory|View|Application {
+        return view('album');
     }
 
 }
