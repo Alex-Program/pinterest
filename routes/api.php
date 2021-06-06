@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,10 @@ Route::post('/login', [UserController::class, 'login']);
 Route::any('/user/check', [UserController::class, 'checkAuth']);
 Route::any('/user/info', [UserController::class, 'getInfo']);
 Route::post('/user/update', [UserController::class, 'update'])->middleware('auth');
+Route::post('/user/follower/add', [FollowerController::class, 'follow'])->middleware('auth');
+Route::post('/user/follower/delete', [FollowerController::class, 'unfollow'])->middleware('auth');
+Route::any('/user/followers', [FollowerController::class, 'index'])->middleware('auth');
+
 
 Route::post('/image/add', [ImageController::class, 'add'])->middleware('auth');
 Route::any('/image/show', [ImageController::class, 'show']);
@@ -33,4 +38,4 @@ Route::any('/album/show', [AlbumController::class, 'show']);
 Route::any('/albums', [AlbumController::class, 'index']);
 
 Route::post('/image/comment/add', [CommentController::class, 'add'])->middleware('auth');
-Route::post('/image/comments', [CommentController::class, 'add'])->middleware('auth');
+Route::any('/image/comments', [CommentController::class, 'index'])->middleware('auth');

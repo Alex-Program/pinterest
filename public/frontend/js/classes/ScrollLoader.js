@@ -14,11 +14,16 @@ export class ScrollLoader {
         this.isLoad = false;
         this.isLast = false;
         this.needPreloader = true;
+        this.order = "asc";
 
         this.setListeners();
     }
 
     set url(value) {
+        this.searchParams.delete("from_id");
+        this.searchParams.delete("to_id");
+
+        this.isLast = false;
         if (!value) this.pathname = "";
         else {
             const url = new URL(location.origin + value);
@@ -44,14 +49,22 @@ export class ScrollLoader {
         if (this.isLoad) return;
 
         this.isLoad = true;
-        if(this.needPreloader) Preloader.open();
+        if (this.needPreloader) Preloader.open();
 
         let id = 1;
         const last = this.element.lastElementChild;
-        if (last) id = parseInt(last.dataset[this.dataset]) + 1;
+        if (last) {
+            if (this.order === "asc") id = parseInt(last.dataset[this.dataset]) + 1;
+            else id = parseInt(last.dataset[this.dataset]) - 1;
+        }
 
-        this.searchParams.set("from_id", String(id));
-        HTTP.sendRequest("GET", this.url)
+        if (this.order === "asc") this.searchParams.set("from_id", String(id));
+        else {
+            if(last) this.searchParams.set("to_id", String(id));
+            else this.searchParams.delete("to_id");
+        }
+
+        return HTTP.sendRequest("GET", this.url)
             .then(data => {
                 data = data.data;
 

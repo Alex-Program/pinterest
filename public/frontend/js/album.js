@@ -67,9 +67,9 @@ elements.images.addEventListener("click", function (event) {
     if (!image) return;
 
     if (event.target.closest(".download")) {
-        const a = document.createElement("a");
-        a.href = image.querySelector("img").src;
-        a.download = IMG.getName(a.href);
-        a.click();
+        IMG.download(image.querySelector("img").src);
+        return;
     }
+
+    imageView(image.dataset.id);
 });

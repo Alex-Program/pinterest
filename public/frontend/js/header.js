@@ -4,6 +4,8 @@ import {User} from "./classes/User.js";
 import {IMG} from "./classes/IMG.js";
 import {Time} from "./classes/Time.js";
 import {Preloader} from "./classes/Preloader.js";
+import {ScrollLoader} from "./classes/ScrollLoader.js";
+import {Form} from "./classes/Form.js";
 
 String.prototype.get = function (from, to = null) {
     if (from < 0) from = this.length + from;
@@ -39,6 +41,10 @@ const elements = {
     comments: document.getElementById("comments"),
     imageViewUser: document.getElementById("image_view_user"),
     imageViewAvatar: document.getElementById("image_view_avatar"),
+    imageViewLink: document.getElementById("image_view_user_link"),
+    imageViewName: document.getElementById("image_view_name"),
+    imageViewDescription: document.getElementById("image_view_description"),
+    editImage: document.getElementById("edit_image"),
     exit: document.querySelectorAll(".exit")
 };
 
@@ -81,19 +87,37 @@ function renderComment(comment) {
 </div>`;
 }
 
+const commentScroll = new ScrollLoader(elements.comments);
+commentScroll.renderFunction = renderComment;
+commentScroll.dataset = "id";
+commentScroll.order = "desc";
+
 window.imageView = async function (imageId) {
     Preloader.open();
-    let data = await HTTP.sendRequest("GET", "/api/image/show?id=" + imageId + "&comments=1");
-    data = data.data;
 
-    elements.imageViewModal.dataset.id = data.id;
-    elements.imageView.src = IMG.MAIN_PHOTOS + "/" + data.src;
+    elements.comments.innerHTML = "";
 
-    let html = "";
-    data.comments.forEach(comment => html += renderComment(comment));
-    elements.comments.innerHTML = html;
-    elements.imageViewUser.innerText = data.user.name;
-    elements.imageViewAvatar.src = data.user.avatar ? IMG.USER_AVATARS + "/" + data.user.avatar : IMG.NO_IMAGE;
+    commentScroll.url = `/api/image/comments?image_id=${imageId}&order=desc`;
+    await Promise.all([
+        HTTP.sendRequest("GET", "/api/image/show?id=" + imageId)
+            .then(data => {
+                data = data.data;
+
+                elements.imageViewModal.dataset.id = data.id;
+                elements.imageView.src = IMG.MAIN_PHOTOS + "/" + data.src;
+                elements.imageViewName.innerText = data.name;
+                elements.imageViewDescription.innerText = data.description;
+                elements.imageViewUser.innerText = data.user.name;
+                elements.imageViewLink.href = "/user?id=" + data.user_id;
+                elements.imageViewAvatar.src = data.user.avatar ? IMG.USER_AVATARS + "/" + data.user.avatar : IMG.NO_IMAGE;
+
+                if (+data.user_id !== User.ID) elements.editImage.style.display = "none";
+                else elements.editImage.style.display = "";
+
+            }),
+        commentScroll.load()
+    ]);
+
 
     elements.imageViewModal.classList.add("opened");
 
@@ -115,10 +139,16 @@ elements.addComment.addEventListener("click", function () {
             data = data.data;
 
             const html = renderComment(data);
-            elements.comments.insertAdjacentHTML("beforeend", html);
+            elements.comments.insertAdjacentHTML("afterbegin", html);
+            elements.commentForm.reset();
+            elements.comments.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
         });
 });
 
+Form.addEnterSubmit(elements.commentForm, elements.addComment);
 
 HTTP.sendRequest("GET", "/api/user/check")
     .then(data => {

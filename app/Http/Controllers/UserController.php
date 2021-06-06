@@ -89,11 +89,28 @@ class UserController extends Controller
 
         if (!$info) return $this->returnError('invalid');
 
-        return $this->returnData([
+        $arr = [
             'name' => $info->name,
             'email' => $info->email,
             'avatar' => $info->avatar
-        ]);
+        ];
+
+        if ($request->get('is_follow', 0) == 1) {
+            $user = UserController::auth();
+            if (!$user) $arr['is_follow'] = 0;
+            else if ($user->id === $info->id) $arr['is_follow'] = 1;
+            else {
+                $data = DB::table('followers')->where([
+                    ['user_id', '=', $info->id],
+                    ['follower_id', '=', $user->id]
+                ])->first();
+                if ($data) $arr['is_follow'] = 1;
+                else $arr['is_follow'] = 0;
+            }
+        }
+
+
+        return $this->returnData($arr);
     }
 
     public function update(Request $request) {

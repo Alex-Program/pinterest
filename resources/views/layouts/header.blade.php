@@ -23,17 +23,25 @@
     <div class="d-flex flex-column justify-content-between">
         <div>
             <img class="w-100 rounded shadow" id="image_view">
-            <div class="mt-2 d-flex mx-0">
+            <a id="image_view_user_link" class="mt-2 d-flex mx-0 align-items-center">
                 <div class="img--rounded">
                     <img id="image_view_avatar" class="w-100">
                 </div>
-                <div id="image_view_user"></div>
-            </div>
+                <div id="image_view_user" class="px-2 fw-bold text--primary"></div>
+            </a>
+            <div id="image_view_name" class="fw-bold"></div>
+            <div id="image_view_description"></div>
         </div>
 
         <div>
-            <div class="mt-2">
-                <button class="modal__close btn btn-secondary" type="button">Закрыть</button>
+            <div class="mt-2 row mx-0">
+                <div class="col-auto px-0">
+                    <button class="modal__close btn btn-secondary" type="button">Закрыть</button>
+                </div>
+                <div class="col-auto px-2">
+                    <button class="btn color--primary for_auth" id="edit_image" type="button">Редактировать
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -69,10 +77,12 @@
 
             <button class="btn color--primary for_guest" id="open_auth" type="button">Войти/Регистрация</button>
             <button class="btn color--primary for_auth d-flex flex-row" type="button">
-                <div class="img--rounded">
-                    <img class="user_avatar w-100" src="">
-                </div>
-                <a href="/user" class="user_name px-2"></a>
+                <a href="/user" class="d-flex flex-row align-items-center">
+                    <div class="img--rounded">
+                        <img class="user_avatar w-100" src="">
+                    </div>
+                    <span class="user_name px-2"></span>
+                </a>
             </button>
 
         </div>

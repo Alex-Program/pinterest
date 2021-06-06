@@ -20,7 +20,15 @@ const elements = {
     albumModal: document.getElementById("album_modal"),
     albums: document.getElementById("albums"),
     forUser: document.querySelectorAll(".for_user"),
-    forOther: document.querySelectorAll(".for_other")
+    forOther: document.querySelectorAll(".for_other"),
+    follow: document.getElementById("follow"),
+    unfollow: document.getElementById("unfollow"),
+    followersCount: document.getElementById("followers_count"),
+    subscribesCount: document.getElementById("subscribes_count"),
+    followersModal: document.getElementById("follower_modal"),
+    followersTitle: document.getElementById("followers_title"),
+    followersList: document.getElementById("followers_list"),
+    followers: document.querySelectorAll(".followers")
 };
 
 Preloader.open();
@@ -32,9 +40,36 @@ if (userId === User.ID) {
     userInfoPromise = User.info;
     elements.forOther.forEach(el => el.style.display = "none");
 } else {
-    userInfoPromise = HTTP.sendRequest("GET", "/api/user/info?id=" + userId).then(data => data.data);
+    userInfoPromise = HTTP.sendRequest("GET", `/api/user/info?id=${userId}&is_follow=1`).then(data => {
+        data = data.data;
+
+        if (User.ID) {
+            if (!data.is_follow) elements.unfollow.style.display = "none";
+            else elements.follow.style.display = "none";
+        }
+
+        return data;
+    });
     albumsUrl += "?user_id=" + userId;
     elements.forUser.forEach(el => el.style.display = "none");
+}
+
+function renderFollowers(title, list) {
+    elements.followersTitle.innerText = title;
+
+    let html = "";
+    list.forEach(user => {
+        const img = user.avatar ? IMG.USER_AVATARS + "/" + user.avatar : IMG.NO_IMAGE;
+        html += `<a class="d-flex flex-row py-1" href="/user?id=${user.id}">
+                    <div class="img--rounded">
+                        <img class="w-100" src="${img}">
+                    </div>
+                    <div class="px-2 fw-bold">${user.name}</div>
+</a>`
+    });
+    elements.followersList.innerHTML = html;
+    elements.followersModal.classList.add("opened");
+
 }
 
 Promise.all([
@@ -49,8 +84,21 @@ Promise.all([
             let html = "";
             data.forEach(album => html += renderAlbum(album));
             elements.albums.innerHTML = html;
+        }),
+    HTTP.sendRequest("GET", `/api/user/followers?user_id=${userId}&count=1`)
+        .then(data => {
+            data = data.data;
+
+            elements.followersCount.innerText = data.count;
+        }),
+    HTTP.sendRequest("GET", `/api/user/followers?follower_id=${userId}&count=1`)
+        .then(data => {
+            data = data.data;
+
+            elements.subscribesCount.innerText = data.count;
         })
-]).then(() => Preloader.close());
+])
+    .then(() => Preloader.close());
 
 function renderAlbum(album) {
     const img = album.avatar ? IMG.ALBUM_PHOTOS + "/" + album.avatar : IMG.NO_IMAGE;
@@ -126,4 +174,54 @@ elements.albums.addEventListener("click", function (event) {
     if (!album) return;
 
     location.href = "/album?id=" + album.dataset.id;
+});
+
+elements.follow.addEventListener("click", function () {
+
+    this.disabled = true;
+    Preloader.open();
+
+    const formData = new FormData();
+    formData.append("user_id", String(userId));
+    HTTP.sendRequest("POST", "/api/user/follower/add", formData)
+        .then(() => {
+            elements.follow.style.display = "none";
+            elements.unfollow.style.display = "";
+            this.disabled = false;
+            Preloader.close();
+        });
+
+});
+
+elements.unfollow.addEventListener("click", function () {
+    this.disabled = true;
+    Preloader.open();
+
+    const formData = new FormData();
+    formData.append("user_id", String(userId));
+    HTTP.sendRequest("POST", "/api/user/follower/delete", formData)
+        .then(() => {
+            elements.follow.style.display = "";
+            elements.unfollow.style.display = "none";
+            this.disabled = false;
+            Preloader.close();
+        });
+
+});
+
+elements.followers.forEach(el => {
+    const type = el.dataset.type;
+    const title = type === "followers" ? "Подписчики" : "Подписки";
+    const field = type === "followers" ? "user_id" : "follower_id";
+    const url = `/api/user/followers?${field}=${userId}&user=1`;
+
+    el.addEventListener("click", async function () {
+        Preloader.open();
+        let data = await HTTP.sendRequest("GET", url);
+        data = data.data;
+        renderFollowers(title, data);
+
+        Preloader.close();
+    });
+
 });

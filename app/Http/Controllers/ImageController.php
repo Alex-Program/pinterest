@@ -16,6 +16,9 @@ class ImageController extends Controller
     const MAIN_PHOTOS = 'public/images/main';
     const ALBUM_PHOTOS = 'public/images/albums';
 
+    protected array $selectFields = ['id', 'src', 'time', 'name'];
+    protected array $allFields = ['id', 'src', 'time', 'name', 'user_id', 'album_id', 'description'];
+
     static public function loadImage($file, $path): string {
 
         $name = Storage::put($path, $file);
@@ -34,14 +37,17 @@ class ImageController extends Controller
         }
         if ($request->has('name')) $args[] = ['LOWER(name)', 'like', '%' . mb_strtolower($request->get('name', 'UTF-8')) . '%'];
 
+        $this->prepareFields($request);
 
-        $sql = "SELECT * FROM `images` WHERE 1";
+        $sql = "SELECT $this->preparedFieldsString FROM `images` WHERE 1";
         $bind = [];
         foreach ($args as $arg) {
             $sql .= ' AND ' . $arg[0] . ' ' . $arg[1] . ' ?';
             $bind[] = $arg[2];
         }
-        $sql .= ' LIMIT ' . $this->limit;
+        $this->prepareOrder($request);
+
+        $sql .= ' ORDER BY ' . $this->orderBy . ' ' . $this->order . ' LIMIT ' . $this->limit;
 
         $data = DB::select($sql, $bind);
         return $this->returnData($data);
@@ -91,12 +97,12 @@ class ImageController extends Controller
         $data->user = DB::table('users')->select(['name', 'avatar'])->where('id', '=', $data->user_id)->first();
 
         if ($request->get('comments', '0') == '1') {
-            $sql = "SELECT *
+            $sql = "SELECT `id`, `comment`, `user_id`, `name`, `avatar`
 FROM `comments`
          JOIN (SELECT `name`, `avatar`, `id` as `u_id` FROM `users`) as `users`
               ON `comments`.`user_id` = `users`.`u_id`
 WHERE `comments`.`image_id` = ?
-";
+ LIMIT " . $this->limit;
             $data->comments = DB::select($sql, [$data->id]);
         }
 

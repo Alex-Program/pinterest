@@ -16,6 +16,16 @@
 
     </form>
 
+    <div class="modal--custom d-flex flex-column" id="follower_modal">
+        <h3 id="followers_title"></h3>
+        <div id="followers_list" class="mt-2">
+
+        </div>
+        <div class="mt-2">
+            <button class="btn btn-secondary modal__close" type="button">Закрыть</button>
+        </div>
+    </div>
+
     <form id="upload_form" style="display: none;">
         <input type="file" name="image" id="select_image">
     </form>
@@ -23,8 +33,25 @@
         <img id="user_image" src="/frontend/images/no_image.webp">
         <div class="user_name fw-bold text--big mt-2"></div>
         <div class="text--middle mt-2" id="user_email"></div>
+        <div class="d-flex align-items-center justify-content-centers">
+
+            <div class="p-1">
+                <div class="p-1 rounded border--primary pointer followers" data-type="followers">
+                    <div id="followers_count" class="text-center fw-bold"></div>
+                    <div>Подписчики</div>
+                </div>
+            </div>
+            <div class="p-1">
+                <div class="p-1 rounded border--primary pointer followers" data-type="subscribes">
+                    <div id="subscribes_count" class="text-center fw-bold"></div>
+                    <div>Подписки</div>
+                </div>
+            </div>
+
+        </div>
         <div class="mt-2">
-            <button class="btn color--primary for_other for_auth">Подписаться</button>
+            <button class="btn color--primary for_other for_auth" id="follow">Подписаться</button>
+            <button class="btn color--primary for_other for_auth" id="unfollow">Отписаться</button>
         </div>
         <div class="mt-2">
             <button class="btn color--primary exit for_user for_auth">Выйти</button>

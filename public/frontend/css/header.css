@@ -234,6 +234,7 @@ button.color--primary:hover {
     visibility: hidden;
     background: white;
     z-index: 1;
+    max-height: 80vh;
 }
 
 .modal--custom.opened {
@@ -377,4 +378,13 @@ button.color--primary:hover {
 .comment__text {
     padding-left: 0.5rem;
     flex: 1;
+}
+
+.border--primary {
+    border: solid 1px var(--color-primary);
+}
+
+#followers_list {
+    flex: 1;
+    overflow: auto;
 }

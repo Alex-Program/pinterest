@@ -47,4 +47,11 @@ export class IMG {
         });
     }
 
+    static download(src) {
+        const a = document.createElement("a");
+        a.href = src;
+        a.download = IMG.getName(a.href);
+        a.click();
+    }
+
 }
