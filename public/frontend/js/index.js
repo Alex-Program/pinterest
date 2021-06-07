@@ -10,7 +10,7 @@ const element = {
 
 
 let searchURL = "/api/images?order=desc";
-if (searchParams.get("name")) searchURL += "&name=" + encodeURIComponent(searchParams.get("name"));
+if (searchParams.get("tags")) searchURL += "&tags=" + searchParams.get("tags");
 
 const scrollLoader = new ScrollLoader(element.images, document.querySelector("#main_container"));
 scrollLoader.renderFunction = renderImage;

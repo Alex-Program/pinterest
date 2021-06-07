@@ -25,7 +25,5 @@ export class User {
     static exit() {
         Cookie.deleteCookie("Id");
         Cookie.deleteCookie("Token");
-
-        location.href = "/";
     }
 }

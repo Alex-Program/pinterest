@@ -27,8 +27,9 @@ HTTP.sendRequest("GET", "/api/album/show?id=" + albumId)
 
 const scrollLoader = new ScrollLoader(elements.images, document.getElementById("main_container"));
 scrollLoader.renderFunction = renderImage;
-scrollLoader.url = "/api/images?album_id=" + albumId;
+scrollLoader.url = `/api/images?album_id=${albumId}&order=desc`;
 scrollLoader.dataset = "id";
+scrollLoader.order = "desc";
 scrollLoader.load();
 
 elements.selectImage.src = IMG.NO_IMAGE;

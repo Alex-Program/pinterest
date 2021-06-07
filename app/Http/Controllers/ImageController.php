@@ -17,7 +17,7 @@ class ImageController extends Controller
     const ALBUM_PHOTOS = 'public/images/albums';
 
     protected array $selectFields = ['id', 'src', 'time', 'name'];
-    protected array $allFields = ['id', 'src', 'time', 'name', 'user_id', 'album_id', 'description'];
+    protected array $allFields = ['id', 'src', 'time', 'name', 'user_id', 'album_id', 'description', 'tags'];
 
     static public function loadImage($file, $path): string {
 
@@ -41,6 +41,17 @@ class ImageController extends Controller
 
         $sql = "SELECT $this->preparedFieldsString FROM `images` WHERE 1";
         $bind = [];
+
+        if ($request->has('tags')) {
+            $tags = json_decode($request->get('tags'));
+            foreach ($tags as $tag) {
+                $tag = mb_strtolower(trim($tag), 'UTF-8');
+                $sql .= ' AND `tags` LIKE ?';
+                $bind[] = '%' . $tag . '%';
+            }
+
+        }
+
         foreach ($args as $arg) {
             $sql .= ' AND ' . $arg[0] . ' ' . $arg[1] . ' ?';
             $bind[] = $arg[2];
@@ -55,7 +66,7 @@ class ImageController extends Controller
 
     public function add(Request $request): array {
         $validator = Validator::make($request->all(), [
-            'image' => 'bail|required|file',
+            'image' => 'bail|required|image',
             'album_id' => 'bail|required|integer|min:1'
         ]);
         if ($validator->fails()) return $this->returnError('');
@@ -105,8 +116,52 @@ WHERE `comments`.`image_id` = ?
  LIMIT " . $this->limit;
             $data->comments = DB::select($sql, [$data->id]);
         }
+        if ($request->get('is_liked', '0') == '1') {
+            $user = UserController::auth();
+            if (!$user) $data->is_liked = 0;
+            else {
+                $info = DB::table('likes')->where([
+                    ['user_id', '=', $user->id],
+                    ['image_id', '=', $data->id]
+                ])->first();
+                $data->is_liked = $info ? 1 : 0;
+            }
+        }
 
         return $this->returnData($data);
+    }
+
+    public function save(Request $request): array {
+        $validator = Validator::make($request->all(), [
+            'id' => 'bail|required|integer|min:1',
+            'name' => 'bail|string|min:1',
+            'description' => 'bail|nullable|string|max:1024|min:0',
+            'image' => 'bail|image',
+            'tags' => 'bail|nullable|string|max:1024|min:0'
+        ]);
+        if ($validator->fails()) return $this->returnError('');
+
+
+        $data = DB::table('images')->select(['user_id'])->where('id', '=', $request->get('id'))->first();
+        if (!$data) return $this->returnError('invalid');
+
+        $user = UserController::auth();
+        if ($data->user_id != $user->id) return $this->returnError('invalid');
+
+        $arr = [];
+        if ($request->has('name')) $arr['name'] = $request->get('name');
+        if ($request->has('description')) $arr['description'] = $request->get('description') ?? '';
+        if ($request->has('tags')) $arr['tags'] = mb_strtolower($request->get('tags') ?? '', 'UTF-8');
+        if ($request->has('image')) {
+            $fileName = self::loadImage($request->file('image'), self::MAIN_PHOTOS);
+            $arr['src'] = $fileName;
+        }
+
+        DB::table('images')->where('id', '=', $request->get('id'))->update($arr);
+
+        $data = DB::table('images')->select($this->selectFields)->where('id', '=', $request->get('id'))->first();
+
+        return $this->returnData(['src' => $data->src, 'id' => $data->id, 'time' => $data->time, 'name' => $data->name]);
     }
 
 }

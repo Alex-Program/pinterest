@@ -72,6 +72,13 @@ class Controller extends BaseController
         }
     }
 
+    protected function prepareLimit(Request $request) {
+        if (!$request->has('limit') || $request->get('limit') == 0) return;
+
+        if ($request->get('limit') > $this->maxLimit) $this->limit = $this->maxLimit;
+        else $this->limit = $request->get('limit');
+    }
+
     protected function prepareFields(Request $request) {
         $this->preparedFields = array_merge($this->selectFields);
 

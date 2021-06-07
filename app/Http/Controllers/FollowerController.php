@@ -57,9 +57,9 @@ class FollowerController extends Controller
             return $this->returnData(['count' => $count]);
         }
 
-        $sql = 'SELECT `user_id`, `follower_id`, `name`, `avatar`
-FROM `followers`
-         ';
+        $sql = 'SELECT `user_id`, `follower_id`';
+        if ($request->get('user', 0) == 1) $sql .= ', `name`, `avatar`';
+        $sql .= ' FROM `followers`';
         if ($request->get('user', 0) == 1) {
             $onField = $request->has('user_id') ? 'follower_id' : 'user_id';
             $sql .= ' JOIN (SELECT `id` as `u_id`, `name`, `avatar` FROM `users`) as `users`

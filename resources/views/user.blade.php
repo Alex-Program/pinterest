@@ -3,6 +3,16 @@
 
 @section('content')
 
+    <div id="liked_modal" class="d-flex flex-column modal--right__full">
+        <div>
+            <button class="btn btn-secondary modal__close" type="button">Закрыть</button>
+        </div>
+        <h3 class="mt-2">Избранное</h3>
+
+        <div id="liked_list" class="overflow-auto row mx-0 p-4">
+        </div>
+    </div>
+
     <form class="modal--custom" id="album_modal">
 
         <div>
@@ -58,7 +68,12 @@
         </div>
     </div>
     <div class="row justify-content-end">
-        <button class="col-auto btn color--primary for_user" id="open_add" type="button">Добавить доску</button>
+        <div class="for_user col-auto">
+            <button class="btn color--primary" type="button" id="to_liked">Избранное</button>
+        </div>
+        <div class="col-auto for_user px-2">
+            <button class="btn color--primary" id="open_add" type="button">Добавить доску</button>
+        </div>
     </div>
     <div class="row mx-0" id="albums">
 

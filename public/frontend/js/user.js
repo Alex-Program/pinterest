@@ -3,6 +3,7 @@ import {IMG} from "./classes/IMG.js";
 import {HTTP} from "./classes/HTTP.js";
 import {Time} from "./classes/Time.js";
 import {Preloader} from "./classes/Preloader.js";
+import {ScrollLoader} from "./classes/ScrollLoader.js";
 
 let userId = parseInt(new URL(location.href).searchParams.get("id"));
 if (!userId) {
@@ -28,7 +29,10 @@ const elements = {
     followersModal: document.getElementById("follower_modal"),
     followersTitle: document.getElementById("followers_title"),
     followersList: document.getElementById("followers_list"),
-    followers: document.querySelectorAll(".followers")
+    followers: document.querySelectorAll(".followers"),
+    likedModal: document.getElementById("liked_modal"),
+    likedList: document.getElementById("liked_list"),
+    toLiked: document.getElementById("to_liked")
 };
 
 Preloader.open();
@@ -54,6 +58,30 @@ if (userId === User.ID) {
     elements.forUser.forEach(el => el.style.display = "none");
 }
 
+function renderLiked(image) {
+    const img = image.src ? IMG.MAIN_PHOTOS + "/" + image.src : IMG.NO_IMAGE;
+    const date = Time.format(image.time);
+
+    return `<div class="p-2 col-md-2 col-sm-12" data-id="${image.id}">
+    <div class="image d-flex flex-column justify-content-between" data-id="${image.image_id}">
+        <img src="${img}" class="w-100">
+        <div>
+            <div class="fw-bold">${image.name}</div>
+            <div>${date}</div>
+        </div>
+        <div class="overlay">
+            <button class="btn color--primary download">Скачать</button>
+        </div>
+    </div>
+</div>`;
+}
+
+const likeScroll = new ScrollLoader(elements.likedList);
+likeScroll.dataset = "id";
+likeScroll.url = "/api/likes?image=1&order=desc";
+likeScroll.order = "desc";
+likeScroll.renderFunction = renderLiked;
+
 function renderFollowers(title, list) {
     elements.followersTitle.innerText = title;
 
@@ -61,7 +89,7 @@ function renderFollowers(title, list) {
     list.forEach(user => {
         const img = user.avatar ? IMG.USER_AVATARS + "/" + user.avatar : IMG.NO_IMAGE;
         html += `<a class="d-flex flex-row py-1" href="/user?id=${user.id}">
-                    <div class="img--rounded">
+                    <div class="img--rounded avatar--preview">
                         <img class="w-100" src="${img}">
                     </div>
                     <div class="px-2 fw-bold">${user.name}</div>
@@ -224,4 +252,33 @@ elements.followers.forEach(el => {
         Preloader.close();
     });
 
+});
+
+elements.toLiked.addEventListener("click", function () {
+
+    this.disabled = true;
+    Preloader.open();
+
+    elements.likedList.innerHTML = "";
+    likeScroll.load()
+        .then(() => {
+
+            elements.likedModal.classList.add("opened");
+            this.disabled = false;
+            Preloader.close();
+
+        });
+
+});
+
+elements.likedList.addEventListener("click", function (event) {
+    const image = event.target.closest(".image");
+    if (!image) return;
+
+    if (event.target.closest(".download")) {
+        IMG.download(image.querySelector("img").src);
+        return;
+    }
+
+    imageView(image.dataset.id);
 });
