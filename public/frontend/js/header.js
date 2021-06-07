@@ -126,6 +126,7 @@ window.imageView = async function (imageId) {
                 let html = "";
                 tags.forEach(tag => {
                     tag = tag.trim();
+                    if (!tag) return;
                     if (tag[0] !== "#") tag = "#" + tag;
                     html += `<span class="px-1 tag text--primary pointer" data-tag="${tag.substring(1)}">${tag}</span>`;
                 });
