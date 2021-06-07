@@ -123,7 +123,7 @@
     <div class="px-3">
         <div class="d-flex flex-column h-100">
             <div id="comments"></div>
-            <form id="comment_form" class="m-0">
+            <form id="comment_form" class="m-0 for_auth">
                 <div class="mt-3">
                     <input type="text" name="comment" class="form-control" value="" placeholder="Добавить комментарий"
                            maxlength="128"
