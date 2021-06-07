@@ -37,6 +37,7 @@ Route::any('/images', [ImageController::class, 'index']);
 
 Route::post('/album/add', [AlbumController::class, 'add'])->middleware('auth');
 Route::any('/album/show', [AlbumController::class, 'show']);
+Route::post('/album/save', [AlbumController::class, 'save'])->middleware('auth');
 Route::any('/albums', [AlbumController::class, 'index']);
 
 Route::post('/image/comment/add', [CommentController::class, 'add'])->middleware('auth');

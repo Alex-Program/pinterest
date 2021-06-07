@@ -32,7 +32,12 @@ const elements = {
     followers: document.querySelectorAll(".followers"),
     likedModal: document.getElementById("liked_modal"),
     likedList: document.getElementById("liked_list"),
-    toLiked: document.getElementById("to_liked")
+    toLiked: document.getElementById("to_liked"),
+    editAlbumModal: document.getElementById("edit_album_modal"),
+    editAlbumForm: document.getElementById("edit_album_form"),
+    saveAlbum: document.getElementById("save_album"),
+    editAlbumPreview: document.getElementById("edit_album_preview"),
+    editAlbumFile: document.getElementById("edit_album_file")
 };
 
 Preloader.open();
@@ -82,13 +87,14 @@ likeScroll.url = "/api/likes?image=1&order=desc";
 likeScroll.order = "desc";
 likeScroll.renderFunction = renderLiked;
 
-function renderFollowers(title, list) {
+function renderFollowers(title, list, type) {
     elements.followersTitle.innerText = title;
 
     let html = "";
     list.forEach(user => {
+        const userId = type === "followers" ? user.follower_id : user.user_id;
         const img = user.avatar ? IMG.USER_AVATARS + "/" + user.avatar : IMG.NO_IMAGE;
-        html += `<a class="d-flex flex-row py-1" href="/user?id=${user.id}">
+        html += `<a class="d-flex flex-row py-1" href="/user?id=${userId}">
                     <div class="img--rounded avatar--preview">
                         <img class="w-100" src="${img}">
                     </div>
@@ -132,12 +138,20 @@ function renderAlbum(album) {
     const img = album.avatar ? IMG.ALBUM_PHOTOS + "/" + album.avatar : IMG.NO_IMAGE;
     const date = Time.format(album.time);
 
+    let overlay = "";
+    if (+album.user_id === User.ID) {
+        overlay = `<div class="overlay">
+            <button class="btn color--primary edit">Редактировать</button>
+        </div>`;
+    }
+
     return `<div class="p-2 col-md-2 col-sm-12">
     <div class="album flex-column d-flex justify-content-between rounded h-100" data-id="${album.id}">
         <img src="${img}" class="w-100">
         <div>
             <div class="fw-bold">${album.name}</div>
             <div>${date}</div>
+            ${overlay}
         </div>
     </div>
 </div>`;
@@ -172,6 +186,26 @@ elements.imageInput.addEventListener("change", function () {
 
 });
 
+elements.editAlbumPreview.addEventListener("click", () => elements.editAlbumFile.dispatchEvent(new MouseEvent("click")));
+IMG.addImagePreview(elements.editAlbumFile, elements.editAlbumPreview);
+
+async function editAlbum(albumId) {
+    Preloader.open();
+
+    elements.editAlbumModal.dataset.id = albumId;
+    let data = await HTTP.sendRequest("GET", "/api/album/show?id=" + albumId);
+    data = data.data;
+
+    const formElements = elements.editAlbumForm.elements;
+    formElements.namedItem("name").value = data.name;
+
+    elements.editAlbumPreview.src = data.avatar ? IMG.ALBUM_PHOTOS + "/" + data.avatar : IMG.NO_IMAGE;
+
+    elements.editAlbumModal.classList.add("opened");
+    Preloader.close();
+
+}
+
 elements.openAddAlbum.addEventListener("click", () => elements.albumModal.classList.add("opened"));
 
 elements.addAlbum.addEventListener("click", function () {
@@ -200,6 +234,11 @@ elements.addAlbum.addEventListener("click", function () {
 elements.albums.addEventListener("click", function (event) {
     const album = event.target.closest(".album");
     if (!album) return;
+
+    if (event.target.closest(".edit")) {
+        editAlbum(album.dataset.id);
+        return;
+    }
 
     location.href = "/album?id=" + album.dataset.id;
 });
@@ -247,7 +286,7 @@ elements.followers.forEach(el => {
         Preloader.open();
         let data = await HTTP.sendRequest("GET", url);
         data = data.data;
-        renderFollowers(title, data);
+        renderFollowers(title, data, type);
 
         Preloader.close();
     });
@@ -281,4 +320,26 @@ elements.likedList.addEventListener("click", function (event) {
     }
 
     imageView(image.dataset.id);
+});
+
+elements.saveAlbum.addEventListener("click", function () {
+    if (!elements.editAlbumForm.reportValidity()) return;
+
+    this.disabled = true;
+    Preloader.open();
+
+    const formElements = elements.editAlbumForm.elements;
+    const formData = new FormData(elements.editAlbumForm);
+    formData.append("id", elements.editAlbumModal.dataset.id);
+    if (formElements.namedItem("image").files.length === 0) formData.delete("image");
+
+    HTTP.sendRequest("POST", "/api/album/save", formData)
+        .then(() => {
+
+            this.disabled = false;
+            elements.editAlbumModal.classList.remove("opened");
+            Preloader.close();
+
+        });
+
 });

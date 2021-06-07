@@ -26,7 +26,7 @@
     <form id="edit_image_form">
         <input type="file" name="image" id="edit_image_file" style="display: none;">
         <div class="d-flex flex-row justify-content-center">
-            <img id="edit_image_preview" class="pointer" style="max-height: 20vh;">
+            <img id="edit_image_preview" class="pointer rounded border--primary border--bold" style="max-height: 20vh;">
         </div>
         <div class="mt-2">
             <label class="fw-bold">Наименование</label>

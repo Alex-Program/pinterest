@@ -384,6 +384,10 @@ button.color--primary:hover {
     border: solid 1px var(--color-primary);
 }
 
+.border--bold {
+    border-width: 3px;
+}
+
 #followers_list {
     flex: 1;
     overflow: auto;

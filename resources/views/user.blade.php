@@ -13,6 +13,31 @@
         </div>
     </div>
 
+    <div id="edit_album_modal" class="modal--right" data-id="">
+
+        <div>
+            <button class="btn btn-secondary modal__close" type="button">Закрыть</button>
+        </div>
+
+        <form id="edit_album_form">
+            <input type="file" name="image" id="edit_album_file" style="display: none;">
+            <div class="d-flex flex-row justify-content-center">
+                <img id="edit_album_preview" class="pointer rounded border--primary border--bold" style="max-height: 20vh;">
+            </div>
+            <div class="mt-2">
+                <label class="fw-bold">Наименование</label>
+                <input type="text" name="name" class="form-control" value="" placeholder="Наименование" maxlength="256"
+                       required>
+            </div>
+            <div class="mt-2">
+                <button class="btn color--primary" id="save_album" type="button">Сохранить</button>
+            </div>
+
+
+        </form>
+
+    </div>
+
     <form class="modal--custom" id="album_modal">
 
         <div>
