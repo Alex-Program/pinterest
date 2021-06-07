@@ -22,11 +22,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/registration', [UserController::class, 'registration'])->middleware('auth:guest');
 Route::post('/login', [UserController::class, 'login'])->middleware('auth:guest');
 Route::any('/user/check', [UserController::class, 'checkAuth']);
-Route::any('/user/info', [UserController::class, 'getInfo'])->middleware('auth');
+Route::any('/user/info', [UserController::class, 'getInfo']);
 Route::post('/user/update', [UserController::class, 'update'])->middleware('auth');
 Route::post('/user/follower/add', [FollowerController::class, 'follow'])->middleware('auth');
 Route::post('/user/follower/delete', [FollowerController::class, 'unfollow'])->middleware('auth');
-Route::any('/user/followers', [FollowerController::class, 'index'])->middleware('auth');
+Route::any('/user/followers', [FollowerController::class, 'index']);
 
 
 Route::post('/image/add', [ImageController::class, 'add'])->middleware('auth');
