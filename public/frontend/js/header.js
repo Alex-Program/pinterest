@@ -219,7 +219,7 @@ document.body.addEventListener("click", function (event) {
 elements.exit.forEach(el => {
     el.addEventListener("click", () => {
         User.exit();
-        location.reload();
+        location.href = "/";
     });
 });
 
