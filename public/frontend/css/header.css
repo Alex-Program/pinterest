@@ -293,7 +293,7 @@ button.color--primary:hover {
 
 .album:hover, .image:hover {
     --border-color: var(--color-primary);
-    --scale: 1.1;
+    --scale: 1.05;
 }
 
 .album > img, .image > img {
