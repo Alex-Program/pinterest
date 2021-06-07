@@ -146,7 +146,7 @@ function renderAlbum(album) {
     }
 
     return `<div class="p-2 col-md-2 col-sm-12">
-    <div class="album flex-column d-flex justify-content-between rounded h-100" data-id="${album.id}">
+    <div class="album flex-column d-flex justify-content-between rounded" data-id="${album.id}">
         <img src="${img}" class="w-100">
         <div>
             <div class="fw-bold">${album.name}</div>
