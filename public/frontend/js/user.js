@@ -218,6 +218,7 @@ elements.addAlbum.addEventListener("click", function () {
     HTTP.sendRequest("POST", "/api/album/add", formData)
         .then(data => {
             data = data.data;
+            data.user_id = User.ID;
 
             const html = renderAlbum(data);
             elements.albums.insertAdjacentHTML("beforeend", html);
