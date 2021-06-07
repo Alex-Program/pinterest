@@ -54,7 +54,7 @@ elements.addImage.addEventListener("click", function () {
 
 
             const html = renderImage(data);
-            elements.images.insertAdjacentHTML("beforeend", html);
+            elements.images.insertAdjacentHTML("afterbegin", html);
             elements.imageModal.reset();
             elements.imageModal.classList.remove("opened");
 
