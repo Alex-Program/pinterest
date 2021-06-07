@@ -55,6 +55,7 @@ elements.addImage.addEventListener("click", function () {
 
             const html = renderImage(data);
             elements.images.insertAdjacentHTML("afterbegin", html);
+            elements.selectImage.src = IMG.NO_IMAGE;
             elements.imageModal.reset();
             elements.imageModal.classList.remove("opened");
 
