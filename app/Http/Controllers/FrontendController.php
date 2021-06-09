@@ -18,12 +18,16 @@ class FrontendController extends Controller
     }
 
     public function user(Request $request): Factory|View|Application {
-        
+
         return view('user');
     }
 
     public function album(Request $request): Factory|View|Application {
         return view('album');
+    }
+
+    public function userEdit(Request $request): Factory|View|Application {
+        return view('user_edit');
     }
 
 }

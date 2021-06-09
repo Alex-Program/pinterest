@@ -39,9 +39,9 @@ class UserController extends Controller
     public function registration(Request $request): array {
         $validator = Validator::make($request->all(),
             [
-                'name' => 'bail|required|string|min:1',
-                'email' => 'bail|required|email',
-                'password' => 'bail|required|string|min:1'
+                'name' => 'bail|required|string|min:1|max:128',
+                'email' => 'bail|required|email|max:128',
+                'password' => 'bail|required|string|min:1|max:128'
             ]
         );
         if ($validator->fails()) return $this->returnError('invalid');
@@ -113,7 +113,14 @@ class UserController extends Controller
         return $this->returnData($arr);
     }
 
-    public function update(Request $request) {
+    public function update(Request $request): array {
+        $validator = Validator::make($request->all(), [
+            'name' => 'bail|string|min:1|max:128',
+            'password' => 'bail|string|min:1|max:128',
+            'image' => 'bail|image'
+        ]);
+        if ($validator->fails()) return $this->returnError('');
+
         $user = self::auth();
 
         $arr = [];
@@ -121,8 +128,12 @@ class UserController extends Controller
         if ($request->has('image')) {
             $arr['avatar'] = ImageController::loadImage($request->file('image'), ImageController::USER_PHOTOS);
         }
+        if ($request->has('name')) $arr['name'] = $request->get('name');
+        if ($request->has('password')) $arr['password'] = Hash::make($request->get('password'));
 
         DB::table('users')->where('id', '=', $user->id)->update($arr);
+
+        return $this->returnData('');
     }
 
     public function checkAuth(Request $request): array {

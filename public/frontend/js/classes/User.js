@@ -9,6 +9,9 @@ export class User {
         return parseInt(Cookie.getCookie("Id"));
     }
 
+    /**
+     * @returns {Promise<Object>}
+     */
     static get info() {
         if (info !== null) return info;
 

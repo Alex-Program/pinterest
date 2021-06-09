@@ -22,7 +22,8 @@
         <form id="edit_album_form">
             <input type="file" name="image" id="edit_album_file" style="display: none;">
             <div class="d-flex flex-row justify-content-center">
-                <img id="edit_album_preview" class="pointer rounded border--primary border--bold" style="max-height: 20vh;">
+                <img id="edit_album_preview" class="pointer rounded border--primary border--bold"
+                     style="max-height: 20vh;">
             </div>
             <div class="mt-2">
                 <label class="fw-bold">Наименование</label>
@@ -88,10 +89,16 @@
             <button class="btn color--primary for_other for_auth" id="follow">Подписаться</button>
             <button class="btn color--primary for_other for_auth" id="unfollow">Отписаться</button>
         </div>
-        <div class="mt-2">
-            <button class="btn color--primary exit for_user for_auth">Выйти</button>
+        <div class="mt-2 d-flex">
+            <div class="for_user for_auth px-1">
+                <button class="btn color--primary"><a href="/user/edit">Редактировать</a></button>
+            </div>
+            <div class="for_user for_auth px-1">
+                <button class="btn color--primary exit">Выйти</button>
+            </div>
         </div>
     </div>
+
     <div class="row justify-content-end">
         <div class="for_user col-auto">
             <button class="btn color--primary" type="button" id="to_liked">Избранное</button>

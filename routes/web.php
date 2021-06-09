@@ -16,4 +16,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontendController::class, 'index']);
 Route::get('/user', [FrontendController::class, 'user']);
+Route::get('/user/edit', [FrontendController::class, 'userEdit'])->middleware('auth');
 Route::get('/album', [FrontendController::class, 'album']);
