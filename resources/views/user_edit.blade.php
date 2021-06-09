@@ -5,7 +5,7 @@
     <form id="edit_form">
         <input type="file" name="image" value="" style="display: none;">
         <div>
-            <img id="edit_user_image" style="max-height: 20vh;">
+            <img class="pointer border--bold border--primary rounded" id="edit_user_image" style="max-height: 20vh;">
         </div>
         <div>
             <label>Имя</label>
